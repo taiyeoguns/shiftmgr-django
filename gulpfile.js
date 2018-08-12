@@ -4,9 +4,16 @@ const rename = require('gulp-rename');
 const concat = require('gulp-concat');
 const csso = require('gulp-csso');
 const del = require('del');
+const less = require('gulp-less');
 
 gulp.task('clean', function(){
 	del('static/*');
+});
+
+gulp.task('less', function(){
+	return gulp.src('assets/less/shiftmgr.less')
+	.pipe(less())
+	.pipe(gulp.dest('assets/css'));
 });
 
 gulp.task('vendor-css', function(){
@@ -20,12 +27,13 @@ gulp.task('vendor-css', function(){
 	.pipe(gulp.dest('static/css'));
 });
 
-gulp.task('css', function(){
+gulp.task('app-css', ['less'], function(){
 	return gulp.src([
 		'node_modules/bootstrap/dist/css/bootstrap.min.css', 
-		'node_modules/adminlte/dist/css/AdminLTE.css'
+		'node_modules/adminlte/dist/css/AdminLTE.css',
+		'assets/css/shiftmgr.css'
 		])
-	.pipe(concat('all.min.css'))
+	.pipe(concat('app.min.css'))
 	//.pipe(gulp.dest('static/css'))
 	//.pipe(rename('all.min.css'))
 	.pipe(csso())
@@ -40,11 +48,22 @@ gulp.task('js', function(){
 	.pipe(gulp.dest('static/js'));
 });
 
+gulp.task('fonts', function(){
+	return gulp.src([
+		'node_modules/bootstrap/fonts/*', 
+		'node_modules/font-awesome/fonts/*',
+		'node_modules/ionicons/dist/fonts/*'
+		])
+	.pipe(gulp.dest('static/fonts'));
+});
+
 
 //----//
 gulp.task('default', [
 	'clean', 
+	'less', 
 	'vendor-css', 
-	'js', 
-	'css'
+	//'js', 
+	'app-css',
+	'fonts'
 ]);
