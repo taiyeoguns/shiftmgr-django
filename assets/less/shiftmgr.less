@@ -1,0 +1,60 @@
+/*
+ * Skin: Shiftmgr
+ * ----------
+ */
+@import "../../node_modules/bootstrap/less/mixins.less";
+@import "../../node_modules/bootstrap/less/variables.less";
+@import "../../node_modules/adminlte/build/less/variables.less";
+@import "../../node_modules/adminlte/build/less/mixins.less";
+
+@shade: #2980b9;
+
+.shiftmgr {
+  //Navbar
+  .main-header {
+    .navbar {
+      .navbar-variant(@shade; #fff);
+      .sidebar-toggle {
+        color: #fff;
+        &:hover {
+          background-color: darken(@shade, 5%);
+        }
+      }
+      @media (max-width: @screen-header-collapse) {
+        .dropdown-menu {
+          li {
+            &.divider {
+              background-color: rgba(255, 255, 255, 0.1);
+            }
+            a {
+              color: #fff;
+              &:hover {
+                background: darken(@shade, 5%);
+              }
+            }
+          }
+        }
+      }
+    }
+    //Logo
+    .logo {
+      .logo-variant(darken(@shade, 5%));
+    }
+
+    li.user-header {
+      background-color: @shade;
+    }
+  }
+
+  //Content Header
+  .content-header {
+    background: transparent;
+  }
+
+  //Create the sidebar skin
+  .skin-dark-sidebar(@shade);
+}
+
+.skin-blue.layout-top-nav .main-header > .logo {
+  .logo-variant(@shade);
+}

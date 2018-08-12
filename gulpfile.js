@@ -31,19 +31,31 @@ gulp.task('app-css', ['less'], function(){
 	return gulp.src([
 		'node_modules/bootstrap/dist/css/bootstrap.min.css', 
 		'node_modules/adminlte/dist/css/AdminLTE.css',
-		'assets/css/shiftmgr.css'
+		'assets/css/shiftmgr.css',
+		'assets/css/styles.css'
 		])
 	.pipe(concat('app.min.css'))
-	//.pipe(gulp.dest('static/css'))
-	//.pipe(rename('all.min.css'))
 	.pipe(csso())
 	.pipe(gulp.dest('static/css'));
 });
 
-gulp.task('js', function(){
-	//console.log('working');
-	return gulp.src('node_modules/adminlte/dist/js/adminlte.js')
-	.pipe(rename('adminlte.min.js'))
+gulp.task('vendor-js', function(){
+	return gulp.src([
+		'node_modules/jquery/dist/jquery.min.js',
+		'node_modules/bootstrap/dist/js/bootstrap.min.js'
+		])
+	.pipe(concat('vendor.min.js'))
+	.pipe(uglify())
+	.pipe(gulp.dest('static/js'));
+});
+
+gulp.task('app-js', function(){
+	return gulp.src([
+		'node_modules/adminlte/dist/js/adminlte.min.js',
+		'node_modules/initial-js/dist/initial.min.js',
+		'assets/js/scripts.js'
+		])
+	.pipe(concat('app.min.js'))
 	.pipe(uglify())
 	.pipe(gulp.dest('static/js'));
 });
@@ -63,7 +75,8 @@ gulp.task('default', [
 	'clean', 
 	'less', 
 	'vendor-css', 
-	//'js', 
 	'app-css',
+	'vendor-js', 
+	'app-js', 
 	'fonts'
 ]);
