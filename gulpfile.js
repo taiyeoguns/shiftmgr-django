@@ -29,7 +29,6 @@ gulp.task('vendor-css', function(){
 
 gulp.task('app-css', ['less'], function(){
 	return gulp.src([
-		'node_modules/bootstrap/dist/css/bootstrap.min.css', 
 		'node_modules/adminlte/dist/css/AdminLTE.css',
 		'assets/css/shiftmgr.css',
 		'assets/css/styles.css'
