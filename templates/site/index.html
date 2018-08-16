@@ -11,7 +11,7 @@
 
   <link rel="stylesheet" href="{% static 'css/vendor.min.css' %}">
   <link rel="stylesheet" href="{% static 'css/app.min.css' %}">
-  {# @yield('page-css') #}
+  {% block 'page-css' %}{% endblock %}
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -24,11 +24,11 @@
 <body class="hold-transition shiftmgr">
 <div class="wrapper">
 
-  {% include 'site/header.html' %}
+  {% include 'site/partials/header.html' %}
 
   <!-- Left side column. contains the logo and sidebar -->
 
-  {# @include('partials.sidebar') #}
+  {% include 'site/partials/sidebar.html' %}
 
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -47,21 +47,21 @@
     <!-- Main content -->
     <section class="content">
 
-      {# @yield('content') #}
+      {% block 'content') %}{% endblock %}
 
     </section>
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
 
-  {# @include('partials.footer') #}
+  {% include 'site/partials/footer.html' %}
 
 </div>
 
 <!-- js -->
 <script src="{% static 'js/vendor.min.js' %}"></script>
 <script src="{% static 'js/app.min.js' %}"></script>
-{# @yield('page-js') #}
+{% block 'page-js' %}{% endblock %}
 
 </body>
 </html>
