@@ -8,9 +8,11 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone = models.CharField(max_length=20)
 
+
 class Manager(models.Model):
     """ Manager """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
 
 class Member(models.Model):
     """ Member """
