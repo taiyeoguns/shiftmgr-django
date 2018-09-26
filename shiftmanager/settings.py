@@ -133,3 +133,4 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
 
 LOGIN_REDIRECT_URL = 'shifts/'
 LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = '/auth/login/'
