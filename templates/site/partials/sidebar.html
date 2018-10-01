@@ -1,3 +1,5 @@
+{% load ttags %}
+
 <aside class="main-sidebar">
 
   <section class="sidebar">
@@ -5,10 +7,10 @@
     <!-- Sidebar user panel (optional) -->
     <div class="user-panel">
       <div class="pull-left image">
-        <img data-name="{{ user.name|default:'User Name' }}" class="img-circle avatar" alt="User Image">
+        <img data-name="{{ user.first_name|_concat:user.last_name|default:'User Name' }}" class="img-circle avatar" alt="User Image">
       </div>
       <div class="pull-left info">
-        <p>{{ user.name|default:'User Name' }}</p>
+        <p>{{ user.first_name|_concat:user.last_name|default:'User Name' }}</p>
       </div>
     </div>
 
@@ -26,20 +28,9 @@
 
     <!-- Sidebar Menu -->
     <ul class="sidebar-menu" data-widget="tree">
-      <li class="header">HEADER</li>
+      <li class="header">MENU</li>
       <!-- Optionally, you can add icons to the links -->
-      <li><a href="#"><i class="fa fa-link"></i> <span>Groups</span></a></li>
-      <li><a href="#"><i class="fa fa-link"></i> <span>Wishlist</span></a></li>
-      <li><a href="#"><i class="fa fa-link"></i> <span>Address Book</span></a></li>
-      <li class="active"><a href="#"><i class="fa fa-link"></i> <span>Link</span></a></li>
-      <li><a href="#"><i class="fa fa-link"></i> <span>Another Link</span></a></li>
-      <li class="treeview">
-        <a href="#"><i class="fa fa-link"></i> <span>Multilevel</span> <i class="fa fa-angle-left pull-right"></i></a>
-        <ul class="treeview-menu">
-          <li><a href="#">Link in level 2</a></li>
-          <li><a href="#">Link in level 2</a></li>
-        </ul>
-      </li>
+      <li class="active"><a href="#"><i class="fa fa-calendar"></i> <span>Shifts</span></a></li>
     </ul>
     <!-- /.sidebar-menu -->
   </section>

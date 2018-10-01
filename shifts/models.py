@@ -3,24 +3,34 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 
 
-# Create your models here.
 class Profile(models.Model):
+    """
+    Profile model to hold extra user information
+    """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone = models.CharField(max_length=20)
 
 
 class Manager(models.Model):
-    """ Manager """
+    """ Manager model """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.user.first_name} {self.user.last_name}"
 
 
 class Member(models.Model):
-    """ Member """
+    """ Member model """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.user.first_name} {self.user.last_name}"
 
 
 class Shift(models.Model):
-    """Shift object"""
+    """
+    Shift model to describe details about a shift such as date etc
+    """
 
     manager = models.ForeignKey('Manager', on_delete=models.CASCADE)
     date = models.DateField(default=timezone.now, help_text='Enter Shift Date')

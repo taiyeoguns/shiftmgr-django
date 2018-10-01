@@ -11,12 +11,6 @@
   <link rel="stylesheet" href="{% static 'css/vendor.min.css' %}">
   <link rel="stylesheet" href="{% static 'css/app.min.css' %}">
 
-  {% comment %}
-  <!-- iCheck -->
-  <link rel="stylesheet" href="../../plugins/iCheck/square/blue.css">
-
-  {% endcomment %}
-
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
   <!--[if lt IE 9]>
@@ -48,8 +42,8 @@
     <form action="{% url 'login' %}" method="post">
     	{% csrf_token %}
       <div class="form-group has-feedback">
-        <input type="text" class="form-control" name="username" placeholder="Email">
-        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+        <input type="text" class="form-control" name="username" placeholder="Username">
+        <span class="glyphicon glyphicon-user form-control-feedback"></span>
       </div>
       <div class="form-group has-feedback">
         <input type="password" class="form-control" name="password" placeholder="Password">
@@ -57,11 +51,6 @@
       </div>
       <div class="row">
         <div class="col-xs-8">
-          <div class="checkbox icheck">
-            <label>
-              <input type="checkbox"> Remember Me
-            </label>
-          </div>
         </div>
         <!-- /.col -->
         <div class="col-xs-4">
@@ -82,20 +71,3 @@
 
 <script src="{% static 'js/vendor.min.js' %}"></script>
 <script src="{% static 'js/app.min.js' %}"></script>
-
-{% comment %}
-<!-- iCheck -->
-<script src="../../plugins/iCheck/icheck.min.js"></script>
-<script>
-  $(function () {
-    $('input').iCheck({
-      checkboxClass: 'icheckbox_square-blue',
-      radioClass: 'iradio_square-blue',
-      increaseArea: '20%' // optional
-    });
-  });
-</script>
-</body>
-</html>
-
-{% endcomment %}
