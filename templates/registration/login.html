@@ -7,7 +7,7 @@
   <title>Shift Manager | Log In</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-  
+
   <link rel="stylesheet" href="{% static 'css/vendor.min.css' %}">
   <link rel="stylesheet" href="{% static 'css/app.min.css' %}">
 
@@ -34,9 +34,9 @@
 
     {% if form.errors %}
         <p class="label label-danger">
-            Your username and password didn't match. 
+            Your username and password didn't match.
             Please try again.
-        </p><br />
+        </p><br /><br />
     {% endif %}
 
     <form action="{% url 'login' %}" method="post">
