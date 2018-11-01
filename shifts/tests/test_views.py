@@ -1,29 +1,35 @@
-from django.test import RequestFactory, TestCase
+from django.test import RequestFactory
 from mixer.backend.django import mixer
 from django.urls import reverse
 from django.contrib.auth.models import User, AnonymousUser
 from shifts.views import index
 import pytest
 
+@pytest.fixture(scope='module')
+def factory():
+    return RequestFactory()
+
+@pytest.fixture
+def user():
+    return mixer.blend(User)
+
+@pytest.fixture
+def shift():
+    return mixer.blend('shifts.Shift')
 
 @pytest.mark.django_db
-class TestViews(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        super(TestViews, cls).setUpClass()
-        mixer.blend('shifts.Shift')
-        cls.factory = RequestFactory()
-
-    def test_shifts_index_authenticated(self):
+class TestViews:
+    def test_shifts_index_authenticated(self, user, factory):
         path = reverse('shifts-index')
-        request = self.factory.get(path)
-        request.user = mixer.blend(User)
+        request = factory.get(path)
+        request.user = user
         response = index(request)
         assert response.status_code == 200
 
-    def test_shifts_index_unauthenticated(self):
+    def test_shifts_index_unauthenticated(self, factory):
         path = reverse('shifts-index')
-        request = self.factory.get(path)
+        request = factory.get(path)
         request.user = AnonymousUser()
         response = index(request)
         assert response.status_code == 302
+        assert 'auth/login' in response.url
