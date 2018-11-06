@@ -8,8 +8,8 @@ class RegisterForm(forms.Form):
     last_name = forms.CharField(max_length=25, required=True)
     phone = forms.CharField(max_length=25)
     email = forms.EmailField(max_length=75, required=True)
-    password1 = forms.CharField(max_length=25, required=True)
-    password2 = forms.CharField(max_length=25, required=True)
+    password1 = forms.CharField(max_length=25, label="Password", required=True)
+    password2 = forms.CharField(max_length=25, label="Retype Password", required=True)
 
     def clean_username(self):
         username = self.cleaned_data['username'].lower()

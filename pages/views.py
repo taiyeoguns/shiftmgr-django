@@ -23,5 +23,7 @@ def register(request):
 			login(request, user)
 			messages.success(request, 'Account created successfully')
 			return redirect('shifts-index')
+	else:
+		form = RegisterForm()
 
-	return render(request, 'registration/register.html', {})
+	return render(request, 'registration/register.html', {'form': form})
