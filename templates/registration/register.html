@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Shift Manager | Log In</title>
+  <title>Shift Manager | Register</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
@@ -21,16 +21,16 @@
   <!-- Google Font -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 </head>
-<body class="hold-transition login-page">
-<div class="login-box">
-  <div class="login-logo">
+<body class="hold-transition register-page">
+<div class="register-box">
+  <div class="register-logo">
     <a href="{% url 'home' %}" class="logo">
 	    Shift Manager
 	</a>
   </div>
-  <!-- /.login-logo -->
-  <div class="login-box-body">
-    <p class="login-box-msg">Sign in to start your session</p>
+  <!-- /.register-logo -->
+  <div class="register-box-body">
+    <p class="register-box-msg">Create new account</p>
 
     {% if form.errors %}
         <p class="label label-danger">
@@ -39,35 +39,54 @@
         </p><br /><br />
     {% endif %}
 
-    <form action="{% url 'login' %}" method="post">
+    <form action="{% url 'register' %}" method="post">
     	{% csrf_token %}
       <div class="form-group has-feedback">
         <input type="text" class="form-control" name="username" placeholder="Username">
         <span class="glyphicon glyphicon-user form-control-feedback"></span>
       </div>
       <div class="form-group has-feedback">
-        <input type="password" class="form-control" name="password" placeholder="Password">
+        <input type="text" class="form-control" name="first_name" placeholder="First Name">
+        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <input type="text" class="form-control" name="last_name" placeholder="Last Name">
+        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <input type="email" class="form-control" name="email" placeholder="Email">
+        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <input type="phone" class="form-control" name="phone" placeholder="Phone">
+        <span class="glyphicon glyphicon-phone form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <input type="password" class="form-control" name="password1" placeholder="Password">
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+      </div>
+      <div class="form-group has-feedback">
+        <input type="password" class="form-control" name="password2" placeholder="Retype password">
+        <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
       </div>
       <div class="row">
         <div class="col-xs-8">
         </div>
         <!-- /.col -->
         <div class="col-xs-4">
-          <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
+          <button type="submit" class="btn btn-primary btn-block btn-flat">Register</button>
           <input type="hidden" name="next" value="{{ next }}" />
         </div>
         <!-- /.col -->
       </div>
     </form>
 
-    <a href="#">I forgot my password</a><br>
-    <a href="{% url 'register' %}" class="text-center">Register as new user</a>
+    <a href="{% url 'login' %}">I already have an account</a>
 
   </div>
-  <!-- /.login-box-body -->
+  <!-- /.register-box-body -->
 </div>
-<!-- /.login-box -->
+<!-- /.register-box -->
 
 <script src="{% static 'js/vendor.min.js' %}"></script>
 <script src="{% static 'js/app.min.js' %}"></script>
