@@ -1,5 +1,5 @@
-from django.contrib.auth.models import User
-from ..models import (Profile, Shift, Manager, Member, Task)
+from django.contrib.auth import get_user_model
+from ..models import (Shift, Manager, Member, Task)
 from mixer.backend.django import mixer
 from datetime import date
 from django.utils import timezone
@@ -8,7 +8,7 @@ import pytest
 
 @pytest.fixture
 def user():
-    user = User.objects.create_user(
+    user = get_user_model().objects.create_user(
         username='testuser', email='testuser@email.com', password='password')
     return user
 
@@ -20,20 +20,6 @@ def shift():
 
 @pytest.mark.django_db
 class TestModels:
-    def test_profile_is_created_when_user_is_created(self, user):
-        """  tests that profile model is created when user is created"""
-
-        assert isinstance(user.profile, Profile)
-        assert user.profile is not None
-
-    def test_profile_is_deleted_when_user_is_deleted(self, user):
-        """ tests that profile is deleted when user is deleted """
-        user.delete()
-
-        with pytest.raises(Profile.DoesNotExist):
-            #user.refresh_from_db()
-            Profile.objects.get(user=user)
-
     def test_manager_can_be_created(self, user):
         user.first_name = 'Mgr'
         user.save()
@@ -51,7 +37,7 @@ class TestModels:
         member = Member.objects.create(user=user)
 
         assert member.id is not None
-        assert isinstance(member.user, User)
+        assert isinstance(member.user, get_user_model())
         assert member.user.first_name == 'Mbr'
         assert 'Mbr' in str(member)
 

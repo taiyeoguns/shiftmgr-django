@@ -17,7 +17,7 @@ def register(request):
             user.refresh_from_db()
             user.first_name = form.cleaned_data.get('first_name')
             user.last_name = form.cleaned_data.get('last_name')
-            user.profile.phone = form.cleaned_data.get('phone')
+            user.phone = form.cleaned_data.get('phone')
             user.save()
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=user.username, password=raw_password)
