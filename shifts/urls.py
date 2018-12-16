@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
 
-urlpatterns = [
-    path('', views.index, name='shifts-index')
-]
+app_name = 'shifts'
+urlpatterns = [path('', views.index, name='index')]

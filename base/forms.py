@@ -4,6 +4,8 @@ from django.core.exceptions import ValidationError
 
 
 class RegisterForm(forms.Form):
+    TYPES = (('member', 'Member'), ('manager', 'Manager'))
+
     username = forms.CharField(max_length=25, required=True)
     first_name = forms.CharField(max_length=25, required=True)
     last_name = forms.CharField(max_length=25, required=True)
@@ -12,6 +14,11 @@ class RegisterForm(forms.Form):
     password1 = forms.CharField(max_length=25, label="Password", required=True)
     password2 = forms.CharField(
         max_length=25, label="Retype Password", required=True)
+    type = forms.ChoiceField(
+        choices=TYPES,
+        widget=forms.RadioSelect,
+        label="User Type",
+        required=True)
 
     def clean_username(self):
         username = self.cleaned_data['username'].lower()
@@ -36,8 +43,21 @@ class RegisterForm(forms.Form):
 
         return password2
 
-    def save(self, commit=True):
+    def save(self, commit=False):
         user = User.objects.create_user(self.cleaned_data['username'],
                                         self.cleaned_data['email'],
                                         self.cleaned_data['password1'])
+        user.first_name = self.cleaned_data.get('first_name')
+        user.last_name = self.cleaned_data.get('last_name')
+        user.phone = self.cleaned_data.get('phone')
+
+        user_type = self.cleaned_data.get('type')
+
+        if user_type == 'member':
+            user.is_member = True
+        elif user_type == 'manager':
+            user.is_manager = True
+
+        user.save()
+
         return user
