@@ -45,7 +45,6 @@ python -c "import string,random; uni=string.ascii_letters+string.digits+string.p
 
 Copy the generated string and add to the `.env` file created in previous step.
 
-
 ### Run migrations
 
 Create tables in the database:
@@ -70,11 +69,24 @@ Run tasks to generate assets:
 gulp
 ```
 
-
 ### Start the server
 
 Start the Django web server by running:
 
 ```sh
 python manage.py runserver
+```
+
+### Seed database
+
+To populate database with sample data, run:
+
+```sh
+python manage.py seed
+```
+
+`num` parameter specifies how many items to enter into the tables e.g.
+
+```sh
+python manage.py seed --num 15
 ```
