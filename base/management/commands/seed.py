@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from base.models import User
+from django.contrib.auth import get_user_model
 from shifts.models import Shift, Manager, Member
 from mixer.backend.django import mixer
 
@@ -10,7 +10,7 @@ class Command(BaseCommand):
     def _get_user(self):
         fname = mixer.faker.first_name()
         lname = mixer.faker.last_name()
-        username = f"{fname[0]}{lname}".lower()
+        username = f"{fname}_{lname}".lower()
         email = f"{fname}.{lname}@shiftmanager.local".lower()
 
         return {"username": username, "fname": fname, "lname": lname, "email": email}
@@ -18,7 +18,7 @@ class Command(BaseCommand):
     def _clear(self):
         self.stdout.write("Clearing data")
 
-        User.objects.all().delete()
+        get_user_model().objects.all().delete()
         Manager.objects.all().delete()
         Member.objects.all().delete()
         Shift.objects.all().delete()
@@ -50,7 +50,7 @@ class Command(BaseCommand):
 
             if i < round(0.4 * options["num"]) - 1:
                 user = mixer.blend(
-                    User,
+                    get_user_model(),
                     username=_user.get("username"),
                     first_name=_user.get("fname"),
                     last_name=_user.get("lname"),
@@ -61,7 +61,7 @@ class Command(BaseCommand):
                 mixer.blend(Manager, user=user)
             else:
                 user = mixer.blend(
-                    User,
+                    get_user_model(),
                     username=_user.get("username"),
                     first_name=_user.get("fname"),
                     last_name=_user.get("lname"),
