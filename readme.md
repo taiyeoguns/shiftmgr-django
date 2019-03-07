@@ -16,7 +16,7 @@ Built with Python and Django.
 ### Clone Project
 
 ```sh
-git clone https://github.com/taiyeoguns/shiftmgr-django.git shiftmgr-django
+git clone https://github.com/taiyeoguns/shiftmgr-django.git
 ```
 
 ### Install Requirements
@@ -77,6 +77,8 @@ Start the Django web server by running:
 python manage.py runserver
 ```
 
+Server should be started at `http://localhost:8000`
+
 ### Seed database
 
 To populate database with sample data, run:
@@ -89,4 +91,12 @@ python manage.py seed
 
 ```sh
 python manage.py seed --num 15
+```
+
+## Tests
+
+In command prompt, run:
+
+```sh
+pytest -v
 ```
