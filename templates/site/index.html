@@ -35,7 +35,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        {{ page_title|default:"Page Title" }}
+        {{ page_title|default:"" }}
         <small>{{ page_description|default:"" }}</small>
       </h1>
       <ol class="breadcrumb">
@@ -47,7 +47,7 @@
     <!-- Main content -->
     <section class="content">
 
-      {% block 'content') %}{% endblock %}
+      {% block 'content' %}{% endblock %}
 
     </section>
     <!-- /.content -->

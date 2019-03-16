@@ -1,0 +1,6 @@
+{
+  "linters": {
+    "*.{css,js,json}": ["prettier --write", "git add"],
+    "*.py": ["black", "git add"]
+  }
+}

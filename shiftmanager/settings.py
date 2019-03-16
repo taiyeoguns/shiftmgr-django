@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "base",
     "shifts",
+    "service_objects",
 ]
 
 MIDDLEWARE = [
@@ -93,7 +94,9 @@ DATABASES = {
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
@@ -139,7 +142,9 @@ logging.config.dictConfig(
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {
-            "default": {"format": "%(asctime)s %(name)-12s %(levelname)-8s %(message)s"},
+            "default": {
+                "format": "%(asctime)s %(name)-12s %(levelname)-8s %(message)s"
+            },
             "django.server": DEFAULT_LOGGING["formatters"]["django.server"],
         },
         "handlers": {
