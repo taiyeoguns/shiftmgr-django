@@ -14,5 +14,6 @@ def index(request):
             "page_title": "Shifts",
             "past_shifts": shifts.get("past_shifts"),
             "upcoming_shifts": shifts.get("upcoming_shifts"),
+            "ongoing_shift": shifts.get("ongoing_shift"),
         },
     )
