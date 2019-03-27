@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from ..models import Shift, Manager, Member, Task
+from ..models import Shift, Manager, Member, Task, Priority, Status
 from mixer.backend.django import mixer
 from datetime import date
 from django.utils import timezone
@@ -57,10 +57,30 @@ class TestModels:
         assert "Shift" in repr(shift)
 
     def test_task_can_be_created(self, shift):
-        task = Task.objects.create(shift=shift, title="Some Task", start=timezone.now())
+        task = Task.objects.create(
+            shift=shift,
+            title="Some Task",
+            start=timezone.now(),
+            handler=mixer.blend(Member),
+            priority=mixer.blend(Priority),
+            status=mixer.blend(Status),
+        )
 
         assert task.id is not None
         assert isinstance(task.shift.date, date)
         assert isinstance(task.shift.manager, Manager)
+        assert isinstance(task.handler, Member)
         assert str(task) == "Some Task"
         assert "Task" in repr(task)
+
+    def test_priority_representation(self):
+        priority = mixer.blend(Priority, title="Priority")
+
+        assert str(priority) == "Priority"
+        assert "Priority" in repr(priority)
+
+    def test_status_representation(self):
+        status = mixer.blend(Status, title="Status")
+
+        assert str(status) == "Status"
+        assert "Status" in repr(status)

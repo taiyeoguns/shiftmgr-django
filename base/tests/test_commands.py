@@ -20,6 +20,14 @@ class TestCommands:
 
         assert Shift.objects.count() == 15
         assert "Seeding" in out.getvalue()
+        assert "Clearing" not in out.getvalue()
+
+    def test_seed_command_with_clear_argument(self):
+        out = StringIO()
+        call_command("seed", stdout=out, clear=True)
+
+        assert Shift.objects.count() == 10
+        assert "Clearing" in out.getvalue()
 
     def test_seed_command_with_lower_boundary(self):
         call_command("seed", num=-1)
@@ -29,4 +37,4 @@ class TestCommands:
     def test_seed_command_with_upper_boundary(self):
         call_command("seed", num=100000)
 
-        assert Shift.objects.count() == 100
+        assert Shift.objects.count() == 50

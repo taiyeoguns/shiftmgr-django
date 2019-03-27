@@ -87,10 +87,16 @@ To populate database with sample data, run:
 python manage.py seed
 ```
 
-`num` parameter specifies how many items to enter into the tables e.g.
+`num` argument specifies how many items to enter into the tables e.g.
 
 ```sh
 python manage.py seed --num 15
+```
+
+`clear` argument specifies to clear the database before seeding e.g.
+
+```sh
+python manage.py seed --clear
 ```
 
 ## Tests

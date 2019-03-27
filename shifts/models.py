@@ -19,6 +19,7 @@ class Member(models.Model):
     """ Member model """
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    shifts = models.ManyToManyField("Shift", related_name="members")
 
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
@@ -33,7 +34,9 @@ class Shift(models.Model):
     """
 
     manager = models.ForeignKey("Manager", on_delete=models.CASCADE)
-    date = models.DateField(default=timezone.now, help_text="Enter Shift Date")
+    date = models.DateField(
+        default=timezone.now, unique=True, help_text="Enter Shift Date"
+    )
 
     def __str__(self):
         return str(self.date)
@@ -48,12 +51,45 @@ class Task(models.Model):
     shift = models.ForeignKey(
         "Shift", on_delete=models.CASCADE, help_text="Enter Shift Id"
     )
+    handler = models.ForeignKey(
+        "Member", on_delete=models.CASCADE, help_text="Enter Member Id"
+    )
     title = models.CharField(max_length=50, help_text="Enter Task Title")
     start = models.DateTimeField(default=timezone.now, help_text="Enter Start Time")
     end = models.DateTimeField(null=True, blank=True, help_text="Enter End Time")
+    priority = models.ForeignKey(
+        "Priority", on_delete=models.CASCADE, help_text="Enter Priority Id"
+    )
+    status = models.ForeignKey(
+        "Status", on_delete=models.CASCADE, help_text="Enter Status Id"
+    )
 
     def __str__(self):
         return self.title
 
     def __repr__(self):
         return f"<Task: {self.title}>"
+
+
+class Priority(models.Model):
+    """ Priority object """
+
+    title = models.CharField(max_length=50, help_text="Enter Priority Title")
+
+    def __str__(self):
+        return self.title
+
+    def __repr__(self):
+        return f"<Priority: {self.title}>"
+
+
+class Status(models.Model):
+    """ Status object """
+
+    title = models.CharField(max_length=50, help_text="Enter Status Title")
+
+    def __str__(self):
+        return self.title
+
+    def __repr__(self):
+        return f"<Status: {self.title}>"
