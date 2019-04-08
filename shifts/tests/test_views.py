@@ -1,13 +1,17 @@
-from django.test import RequestFactory
-from mixer.backend.django import mixer
-from django.urls import reverse
-from django.contrib.auth.models import AnonymousUser
-from django.contrib.auth import get_user_model
-from shifts.views import index
+import datetime
+
 import pytest
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
+from django.test import RequestFactory
+from django.urls import reverse
+from mixer.backend.django import mixer
+
+from shifts.models import Manager, Member, Shift
+from shifts.views import index
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def factory():
     return RequestFactory()
 
@@ -17,24 +21,90 @@ def user():
     return mixer.blend(get_user_model())
 
 
-@pytest.fixture
-def shift():
-    return mixer.blend('shifts.Shift')
-
-
 @pytest.mark.django_db
 class TestViews:
     def test_shifts_index_authenticated(self, user, factory):
-        path = reverse('shifts:index')
+        path = reverse("shifts:index")
         request = factory.get(path)
         request.user = user
         response = index(request)
         assert response.status_code == 200
 
     def test_shifts_index_unauthenticated(self, factory):
-        path = reverse('shifts:index')
+        path = reverse("shifts:index")
         request = factory.get(path)
         request.user = AnonymousUser()
         response = index(request)
         assert response.status_code == 302
-        assert reverse('login') in response.url
+        assert reverse("login") in response.url
+
+    def test_shifts_create(self, user, client):
+        path = reverse("shifts:create")
+
+        shift_date = "06/04/2019"
+        managers = mixer.cycle(2).blend(Manager)
+        members = mixer.cycle(3).blend(Member)
+
+        mgr = managers[0]
+        mbrs = [member.id for member in members if member.id < 3]
+
+        client.force_login(user)
+
+        response = client.post(
+            path,
+            {"shift_date": shift_date, "manager": mgr.id, "members": mbrs},
+            follow=True,
+        )
+
+        messages = list(response.context["messages"])
+
+        assert reverse("shifts:index") in str(response.redirect_chain)
+        assert len(messages) == 1
+        assert "Shift added" in str(messages[0])
+
+    def test_shifts_create_does_not_add_existing_date(self, user, client):
+        mixer.blend(Shift, date=datetime.date(2019, 4, 6))
+
+        path = reverse("shifts:create")
+
+        shift_date = "06/04/2019"
+        managers = mixer.cycle(2).blend(Manager)
+        members = mixer.cycle(3).blend(Member)
+
+        mgr = managers[0]
+        mbrs = [member.id for member in members if member.id < 3]
+
+        client.force_login(user)
+
+        response = client.post(
+            path,
+            {"shift_date": shift_date, "manager": mgr.id, "members": mbrs},
+            follow=True,
+        )
+
+        messages = list(response.context["messages"])
+
+        assert Shift.objects.count() == 1
+        assert "exists" in str(messages[0])
+
+    def test_shifts_create_does_not_add_if_form_invalid(self, user, client):
+        path = reverse("shifts:create")
+
+        shift_date = "06/04/2019"
+        members = mixer.cycle(3).blend(Member)
+
+        mgr = "foo"
+        mbrs = [member.id for member in members if member.id < 3]
+
+        client.force_login(user)
+
+        response = client.post(
+            path,
+            {"shift_date": shift_date, "manager": mgr, "members": mbrs},
+            follow=True,
+        )
+
+        messages = list(response.context["messages"])
+
+        assert Shift.objects.count() == 0
+        assert "issue" in str(messages[0]).lower()

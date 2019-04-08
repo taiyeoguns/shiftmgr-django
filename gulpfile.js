@@ -89,6 +89,15 @@ gulp.task("shifts-index-css", function() {
     .pipe(gulp.dest("static/css/shifts"));
 });
 
+gulp.task("shifts-css-images", function() {
+  return gulp
+    .src([
+      "node_modules/chosen-js/chosen-sprite.png",
+      "node_modules/chosen-js/chosen-sprite@2x.png"
+    ])
+    .pipe(gulp.dest("static/css/shifts"));
+});
+
 gulp.task("shifts-index-js", function() {
   return gulp
     .src([
@@ -99,6 +108,8 @@ gulp.task("shifts-index-js", function() {
       "node_modules/chosen-js/chosen.jquery.min.js",
       "node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js",
       "node_modules/jquery-confirm/dist/jquery-confirm.min.js",
+      "node_modules/jquery-validation/dist/jquery.validate.min.js",
+      "assets/js/ext/jquery.validate.bootstrap.js",
       "assets/js/shifts/index.js"
     ])
     .pipe(concat("index.min.js"))
@@ -115,6 +126,7 @@ gulp.task("default", [
   "vendor-js",
   "app-js",
   "fonts",
+  "shifts-css-images",
   "shifts-index-css",
   "shifts-index-js"
 ]);

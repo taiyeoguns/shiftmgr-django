@@ -19,8 +19,8 @@ $(function() {
   $("#shift_date").datepicker({
     format: "dd/mm/yyyy",
     startDate: "today",
-    daysOfWeekDisabled: "1,2,3,4,5",
-    daysOfWeekHighlighted: "0,6",
+    daysOfWeekHighlighted: "1,2,3,4,5",
+    daysOfWeekDisabled: "0,6",
     calendarWeeks: true,
     autoclose: true,
     todayHighlight: true
@@ -59,7 +59,7 @@ $(function() {
     validator.resetForm();
   });
 
-  $("#manager, #members, #colleague").chosen({
+  $("#manager, #members").chosen({
     width: "100%"
   });
 });
