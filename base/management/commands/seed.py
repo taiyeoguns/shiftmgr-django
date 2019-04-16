@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from shifts.models import Shift, Manager, Member, Priority, Status
 from mixer.backend.django import mixer
 import random
+from datetime import datetime, timedelta
 
 
 class Command(BaseCommand):
@@ -102,12 +103,22 @@ class Command(BaseCommand):
         # seed shifts
         self.stdout.write("Seeding Shifts")
 
+        mid = round(0.4 * options["num"])
+
         for i in range(options["num"]):
-            mixer.blend(
-                Shift,
-                date=mixer.faker.date_between(start_date="-10y", end_date="+10y"),
-                manager=mixer.SELECT,
-            )
+
+            if i <= mid:
+                mixer.blend(
+                    Shift,
+                    date=datetime.today() + timedelta(days=i + 1),
+                    manager=mixer.SELECT,
+                )
+            else:
+                mixer.blend(
+                    Shift,
+                    date=datetime.today() - timedelta(days=i + 1),
+                    manager=mixer.SELECT,
+                )
 
         # assign shift for each member
         self.stdout.write("Seeding members to shifts")
