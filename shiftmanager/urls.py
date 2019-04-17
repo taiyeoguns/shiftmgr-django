@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
 from base.views import home, RegisterView
 
 urlpatterns = [
@@ -24,3 +25,6 @@ urlpatterns = [
     path("auth/", include("django.contrib.auth.urls")),
     path("shifts/", include("shifts.urls")),
 ]
+
+if settings.DEBUG:
+    urlpatterns = [path("mails/", include("herald.urls"))] + urlpatterns
