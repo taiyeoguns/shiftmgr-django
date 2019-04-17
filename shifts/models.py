@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
+import uuid
 
 
 class Manager(models.Model):
@@ -33,6 +34,7 @@ class Shift(models.Model):
     Shift model to describe details about a shift such as date etc
     """
 
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     manager = models.ForeignKey("Manager", on_delete=models.CASCADE)
     date = models.DateField(
         default=timezone.now, unique=True, help_text="Enter Shift Date"
