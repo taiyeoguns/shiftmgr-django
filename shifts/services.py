@@ -2,6 +2,7 @@ from service_objects.services import Service
 from .models import Shift, Manager, Member
 from django.utils import timezone
 from django import forms
+from .notifications import ShiftCreatedEmail
 
 
 class GetShifts(Service):
@@ -53,5 +54,8 @@ class AddShift(Service):
         shift.save()
 
         shift.members.add(*members)
+
+        # send email
+        ShiftCreatedEmail(shift).send()
 
         return shift

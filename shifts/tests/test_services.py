@@ -31,7 +31,7 @@ class TestServices:
     @mock.patch("shifts.services.Member.objects.all")
     @mock.patch("shifts.services.Manager.objects.all")
     @pytest.mark.django_db
-    def test_addshift(self, mock_managers, mock_members):
+    def test_addshift(self, mock_managers, mock_members, mailoutbox):
         shift_date = "06/04/2019"
         managers = mixer.cycle(2).blend(Manager)
         members = mixer.cycle(3).blend(Member)
@@ -46,6 +46,11 @@ class TestServices:
             {"shift_date": shift_date, "manager": mgr.id, "members": mbrs}
         )
 
+        m = mailoutbox[0]  # get sent mail
+
         assert shift.id is not None
         assert shift.manager == mgr
         assert list(shift.members.all()) == members
+        assert len(mailoutbox) == 1
+        assert m.subject == "Shift Assigned"
+        assert mgr.user.first_name in m.body

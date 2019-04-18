@@ -1,3 +1,4 @@
+import logging
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -5,6 +6,8 @@ from django.db import IntegrityError
 from .services import GetShifts, AddShift
 from .models import Manager, Member
 from .forms import AddShiftForm
+
+logger = logging.getLogger(__name__)
 
 
 # Create your views here.
@@ -30,12 +33,14 @@ def create(request):
     form = AddShiftForm(request.POST)
     try:
         if form.is_valid():
-            AddShift.execute(request.POST)
+            shift = AddShift.execute(request.POST)
 
             messages.success(request, "Shift added successfully")
+            logger.info(f"Shift added successfully. id: {shift.id}")
         else:
             messages.error(request, "Issue with items entered. Check and try again.")
     except IntegrityError:
         messages.error(request, "Date already exists")
+        logger.error("Date already exists", exc_info=True)
     finally:
         return redirect("shifts:index")

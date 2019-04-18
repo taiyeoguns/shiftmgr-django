@@ -1,0 +1,6 @@
+Hi {{ first_name }},
+
+A new shift has been assigned to you.
+
+Thanks,
+Shift Manager Team
