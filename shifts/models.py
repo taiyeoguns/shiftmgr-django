@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.conf import settings
 import uuid
+from django.urls import reverse
 
 
 class Manager(models.Model):
@@ -39,6 +40,9 @@ class Shift(models.Model):
     date = models.DateField(
         default=timezone.now, unique=True, help_text="Enter Shift Date"
     )
+
+    def get_absolute_url(self):
+        return reverse("shifts:detail", args=[str(self.uuid)])
 
     def __str__(self):
         return str(self.date)

@@ -10,9 +10,11 @@ from .forms import AddShiftForm
 logger = logging.getLogger(__name__)
 
 
-# Create your views here.
 @login_required
 def index(request):
+    """
+    Show list of shifts
+    """
     shifts = GetShifts.execute({})
     return render(
         request,
@@ -30,6 +32,9 @@ def index(request):
 
 @login_required
 def create(request):
+    """
+    Create new shift
+    """
     form = AddShiftForm(request.POST)
     try:
         if form.is_valid():
@@ -44,3 +49,11 @@ def create(request):
         logger.error("Date already exists", exc_info=True)
     finally:
         return redirect("shifts:index")
+
+
+@login_required
+def detail(request, uuid):
+    """
+    Display details of shift
+    """
+    return render(request, "shifts/detail.html", {"page_title": "Shift Details"})

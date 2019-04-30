@@ -5,4 +5,5 @@ app_name = "shifts"
 urlpatterns = [
     path("", views.index, name="index"),
     path("create/", views.create, name="create"),
+    path("<uuid:uuid>/", views.detail, name="detail"),
 ]
