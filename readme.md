@@ -66,7 +66,7 @@ yarn
 Run tasks to generate assets:
 
 ```sh
-gulp
+yarn gulp
 ```
 
 ### Start the server
