@@ -1,17 +1,28 @@
+import pytest
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser, Group
+from django.contrib.messages.middleware import MessageMiddleware
+from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import RequestFactory
 from django.urls import reverse
-from django.contrib.auth.models import AnonymousUser
-from django.contrib.auth import get_user_model
-from ..views import home, RegisterView
-import pytest
-from django.contrib.sessions.middleware import SessionMiddleware
-from django.contrib.messages.middleware import MessageMiddleware
+
 from shifts.models import Member
+
+from ..views import RegisterView, home
 
 
 @pytest.fixture(scope="module")
 def factory():
     return RequestFactory()
+
+
+@pytest.fixture
+def groups(db):
+    manager, member = (
+        Group.objects.get_or_create(name=name)[0] for name in ("Manager", "Member")
+    )
+
+    return {"manager": manager, "member": member}
 
 
 @pytest.mark.django_db
@@ -32,7 +43,7 @@ class TestViews:
         assert response.status_code == 200
         assert "Create new account" in str(response.content)
 
-    def test_user_created_through_register_form(self, factory):
+    def test_user_created_through_register_form(self, factory, groups):
         path = reverse("register")
         request = factory.post(
             path,
@@ -55,6 +66,7 @@ class TestViews:
         assert response.status_code == 302
         assert user.email == "user1@email.com"
         assert user.is_manager is True
+        assert groups["manager"] in user.groups.all()
         assert reverse("shifts:index") in response.url
 
     def test_error_is_displayed_on_register_form_if_form_is_invalid(self, factory):
@@ -65,7 +77,7 @@ class TestViews:
         response = RegisterView.as_view()(request)
         assert "This field is required" in str(response.content)
 
-    def test_member_is_created_through_register_form(self, factory):
+    def test_member_is_created_through_register_form(self, factory, groups):
         path = reverse("register")
         request = factory.post(
             path,
@@ -87,5 +99,6 @@ class TestViews:
         user = get_user_model().objects.get(username="user1")
         member = Member.objects.get(user=user)
         assert user.is_member is True
+        assert groups["member"] in user.groups.all()
         assert member.id is not None
         assert member.user.username == "user1"

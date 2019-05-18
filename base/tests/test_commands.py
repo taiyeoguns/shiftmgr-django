@@ -11,7 +11,7 @@ class TestCommands:
         out = StringIO()
         call_command("seed", stdout=out)
 
-        assert get_user_model().objects.count() == 10
+        assert get_user_model().objects.filter(is_staff=False).count() == 10
         assert "Done" in out.getvalue()
 
     def test_seed_command_with_num_argument(self):
