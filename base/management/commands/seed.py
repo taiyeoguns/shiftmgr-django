@@ -1,15 +1,26 @@
-from django.core.management.base import BaseCommand
-from django.contrib.auth import get_user_model
-from shifts.models import Shift, Manager, Member, Priority, Status
-from mixer.backend.django import mixer
+import os
 import random
 from datetime import datetime, timedelta
+
+from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
+from django.core.management.base import BaseCommand
+from mixer.backend.django import mixer
+
+from shifts.models import Manager, Member, Priority, Shift, Status, Task
 
 
 class Command(BaseCommand):
     help = "Seeds the database with initial data"
 
     def _get_user(self):
+        """Generate data for user
+
+        Returns:
+            Dictionary -- User details
+        """
         suffix = mixer.faker.pyint()
         fname = mixer.faker.first_name()
         lname = mixer.faker.last_name()
@@ -26,6 +37,8 @@ class Command(BaseCommand):
         }
 
     def _clear(self):
+        """Clear database tables before seeding
+        """
         self.stdout.write("Clearing data")
 
         get_user_model().objects.all().delete()
@@ -34,6 +47,47 @@ class Command(BaseCommand):
         Shift.objects.all().delete()
         Priority.objects.all().delete()
         Status.objects.all().delete()
+        Group.objects.all().delete()
+
+    def _create_super_user(self):
+        return get_user_model().objects.create_superuser(
+            "admin",
+            "admin@shiftmanager.local",
+            os.getenv("DEFAULT_ADMIN_PASSWORD"),
+            first_name="Admin",
+            last_name="User",
+        )
+
+    def _set_up_roles(self):
+        """Set up groups and permissions for users
+        """
+        admin, manager, member = (
+            Group.objects.get_or_create(name=name)[0]
+            for name in ("Admin", "Manager", "Member")
+        )
+
+        # get permissions for models
+        content_types = ContentType.objects.get_for_models(Manager, Member, Shift, Task)
+        permissions = Permission.objects.filter(content_type__in=content_types.values())
+
+        manager_permissions = (
+            perm
+            for perm in permissions
+            if perm.codename
+            in ("view_shift", "change_shift", "add_task", "change_task")
+        )
+
+        member_permissions = (
+            perm
+            for perm in permissions
+            if perm.codename in ("view_shift", "view_task", "change_task")
+        )
+
+        admin.permissions.add(*permissions)
+        manager.permissions.add(*manager_permissions)
+        member.permissions.add(*member_permissions)
+
+        return {"admin": admin, "manager": manager, "member": member}
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -57,6 +111,13 @@ class Command(BaseCommand):
 
         if options["num"] > 50:
             options["num"] = 50
+
+        # create super user
+        self.stdout.write("Creating Superuser")
+        self._create_super_user()
+
+        # get roles
+        _roles = self._set_up_roles()
 
         self.stdout.write("Seeding Priorities")
         mixer.cycle(3).blend(
@@ -83,8 +144,11 @@ class Command(BaseCommand):
                     last_name=_user.get("lname"),
                     email=_user.get("email"),
                     phone=_user.get("phone"),
+                    password=make_password(os.getenv("DEFAULT_USER_PASSWORD")),
                     is_manager=True,
                 )
+
+                user.groups.add(_roles.get("manager"))
 
                 mixer.blend(Manager, user=user)
             else:
@@ -95,8 +159,11 @@ class Command(BaseCommand):
                     last_name=_user.get("lname"),
                     email=_user.get("email"),
                     phone=_user.get("phone"),
+                    password=make_password(os.getenv("DEFAULT_USER_PASSWORD")),
                     is_member=True,
                 )
+
+                user.groups.add(_roles.get("member"))
 
                 mixer.blend(Member, user=user)
 
