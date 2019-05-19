@@ -1,9 +1,12 @@
-from django.contrib.auth import get_user_model
-from ..models import Shift, Manager, Member, Task, Priority, Status
-from mixer.backend.django import mixer
 from datetime import date
-from django.utils import timezone
+from unittest import mock
+
 import pytest
+from django.contrib.auth import get_user_model
+from django.utils import timezone
+from mixer.backend.django import mixer
+
+from ..models import Manager, Member, Priority, Shift, Status, Task
 
 
 @pytest.fixture
@@ -55,6 +58,20 @@ class TestModels:
         assert isinstance(shift.date, date)
         assert str(shift) == "2018-11-01"
         assert "Shift" in repr(shift)
+
+    @mock.patch(
+        "shifts.models.timezone.localdate",
+        return_value=date(2019, 5, 18),
+        autospec=True,
+    )
+    def test_shift_is_today(self, mock_today):
+        shift = mixer.blend(Shift, date=date(2019, 5, 18))
+
+        result = shift.is_today
+
+        mock_today.assert_called_once()
+
+        assert result is True
 
     def test_task_can_be_created(self, shift):
         task = Task.objects.create(
