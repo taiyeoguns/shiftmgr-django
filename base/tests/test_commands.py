@@ -29,6 +29,11 @@ class TestCommands:
         assert Shift.objects.count() == 10
         assert "Clearing" in out.getvalue()
 
+    def test_seed_command_with_prod_argument(self):
+        call_command("seed", prod=True)
+
+        assert Shift.objects.count() == 0
+
     def test_seed_command_with_lower_boundary(self):
         call_command("seed", num=-1)
 
