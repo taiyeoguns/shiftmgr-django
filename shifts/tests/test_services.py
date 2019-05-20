@@ -13,14 +13,17 @@ class TestServices:
         return_value=datetime.date(2019, 3, 23),
         autospec=True,
     )
+    @pytest.mark.django_db
     def test_getshifts(self, mock_date, mock_shifts):
-        shift1 = Shift(date=datetime.date(2019, 3, 22))
-        shift2 = Shift(date=datetime.date(2019, 3, 23))
-        shift3 = Shift(date=datetime.date(2019, 3, 24))
+        manager = mixer.blend(Manager)
+
+        shift1 = Shift(date=datetime.date(2019, 3, 22), manager=manager)
+        shift2 = Shift(date=datetime.date(2019, 3, 23), manager=manager)
+        shift3 = Shift(date=datetime.date(2019, 3, 24), manager=manager)
 
         mock_shifts.return_value = [shift1, shift2, shift3]
 
-        shifts = GetShifts.execute({})
+        shifts = GetShifts.execute({}, user=manager.user)
 
         assert shifts["past_shifts"] is not None
         assert shift1 in shifts["past_shifts"]

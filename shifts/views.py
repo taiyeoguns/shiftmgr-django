@@ -1,11 +1,14 @@
 import logging
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
+
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from .services import GetShifts, AddShift
-from .models import Manager, Member
+from django.shortcuts import redirect, render
+from service_objects.errors import InvalidInputsError
+
 from .forms import AddShiftForm
+from .models import Manager, Member
+from .services import AddShift, GetShift, GetShifts
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +18,7 @@ def index(request):
     """
     Show list of shifts
     """
-    shifts = GetShifts.execute({})
+    shifts = GetShifts.execute({}, user=request.user)
     return render(
         request,
         "shifts/index.html",
@@ -56,4 +59,37 @@ def detail(request, uuid):
     """
     Display details of shift
     """
-    return render(request, "shifts/detail.html", {"page_title": "Shift Details"})
+
+    try:
+
+        shift = GetShift.execute({"uuid": uuid}, user=request.user)
+
+        if not shift["shift"]:
+            messages.error(
+                request,
+                "Could not find shift for id provided",
+                extra_tags="alert-important",
+            )
+            return redirect("shifts:index")
+
+    except InvalidInputsError as e:
+
+        messages.error(
+            request,
+            f"Invalid shift id: {e.errors.get('uuid').as_text()}",
+            extra_tags="alert-important",
+        )
+        return redirect("shifts:index")
+
+    return render(
+        request,
+        "shifts/detail.html",
+        {
+            "page_title": "Shift Details",
+            "shift": shift["shift"],
+            "shift_tasks": shift["shift_tasks"],
+            "member_tasks": shift["member_tasks"],
+            "groups_data": shift["groups_data"],
+            "timeline_data": shift["timeline_data"],
+        },
+    )

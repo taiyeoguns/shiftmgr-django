@@ -1,11 +1,15 @@
-from service_objects.services import Service
-from .models import Shift, Manager, Member
-from django.utils import timezone
 from django import forms
+from django.utils import timezone
+from service_objects.services import Service
+
+from .models import Manager, Member, Shift
 from .notifications import ShiftCreatedEmail
 
 
 class GetShifts(Service):
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user")
+        super(GetShifts, self).__init__(*args, **kwargs)
 
     db_transaction = False
 
@@ -33,7 +37,12 @@ class GetShifts(Service):
         }
 
     def get_shifts(self):
-        return Shift.objects.all()
+        if self.user.is_manager:
+            return self.user.manager.shifts.all()
+        elif self.user.is_member:
+            return self.user.member.shifts.all()
+        else:
+            return Shift.objects.all()
 
 
 class AddShift(Service):
@@ -59,3 +68,56 @@ class AddShift(Service):
         ShiftCreatedEmail(shift).send()
 
         return shift
+
+
+class GetShift(Service):
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user")
+        super(GetShift, self).__init__(*args, **kwargs)
+
+    uuid = forms.UUIDField()
+
+    db_transaction = False
+
+    def process(self):
+        uuid = self.cleaned_data.get("uuid")
+
+        try:
+            shift = Shift.objects.get(uuid=uuid)
+        except Shift.DoesNotExist:
+            shift = False
+
+        if shift:
+            if self.user.is_member:
+                shift_tasks = shift.tasks.filter(handler=self.user.member)
+            else:
+                shift_tasks = shift.tasks.all()
+
+            member_tasks = {
+                task.handler: shift.tasks.filter(handler=task.handler).count()
+                for task in shift.tasks.all()
+            }
+
+            groups_data = [
+                {"id": member.id, "content": member.user.get_full_name()}
+                for member in shift.members.all()
+            ]
+
+            timeline_data = [
+                {
+                    "id": task.id,
+                    "content": task.title,
+                    "group": task.handler.id,
+                    "start": task.start.isoformat(),
+                    "end": task.end.isoformat(),
+                }
+                for task in shift_tasks
+            ]
+
+        return {
+            "shift": shift,
+            "shift_tasks": shift_tasks,
+            "member_tasks": member_tasks,
+            "groups_data": groups_data,
+            "timeline_data": timeline_data,
+        }

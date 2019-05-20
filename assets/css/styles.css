@@ -1,3 +1,15 @@
 /*
 Styles
 */
+
+#timeline {
+  position: relative;
+}
+
+#timeline .menu {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: -40px 0 0 0;
+  z-index: 99;
+}

@@ -2,13 +2,186 @@
 {% load static %}
 
 {% block 'page-css' %}
-
+<link rel="stylesheet" href="{% static 'css/shifts/detail.min.css' %}">
 {% endblock 'page-css' %}
 
 {% block 'content' %}
 
+<div class="row">
+    <div class="col-md-3">
+
+        <div>
+
+            <p><a href="{% url 'shifts:index' %}" class="btn btn-sm btn-default"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Back to Shifts</a></p>
+            {% if perms.shifts.add_shift %}
+            <p><a href="#" class="btn btn-sm btn-default"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Back to All Shifts</a></p>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <div class="col-md-6">
+
+        {% if perms.shifts.add_task and shift.members.count > 0 %}
+        {% if shift.is_today or user.is_admin %}
+        <p class="text-center">
+
+            <button type="button" class="btn btn-sm btn-success" id="add_task_btn" data-toggle="modal" data-target="#modal"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add Task</button>
+
+        </p>
+        {% endif %}
+        {% endif %}
+
+    </div>
+
+    <div class="col-md-3">
+
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title" id="shift_date">{{ shift.date|date:'D, d/m/Y' }}</h3>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body">
+
+                <table class="table table-hover">
+                    <tbody>
+                        <tr>
+                            <td><strong>Manager</strong></td>
+                            <td>{{ shift.manager.user.get_full_name }}</td>
+                        </tr>
+                        {% if not user.is_member %}
+                        <tr>
+                            <td><strong>Members</strong></td>
+                            <td><a href="" title="View members for this shift" data-toggle="modal" data-target="#members_modal">View</a>
+                                {% if user.is_admin or shift.manager.user.id == user.id and shift.is_today %}
+                                | <a href="" title="Add members to this shift" data-toggle="modal" data-target="#add_modal">Add</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="nav-tabs-custom">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#tab_1" data-toggle="tab">Timeline</a></li>
+        <li><a href="#tab_2" data-toggle="tab">List</a></li>
+        {% if perms.shifts.add_task %}
+        <li><a href="#tab_3" data-toggle="tab">Summary</a></li>
+        {% endif %}
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="tab_1">
+
+            <div id="timeline">
+                <div class="menu">
+                    <button class="fa fa-search-plus" id="zoomIn" title="Zoom in"></button>
+                    <button class="fa fa-search-minus" id="zoomOut" title="Zoom out"></button>
+                    <button class="fa fa-angle-double-left" id="moveLeft" title="Move left"></button>
+                    <button class="fa fa-angle-double-right" id="moveRight" title="Move right"></button>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.tab-pane -->
+        <div class="tab-pane" id="tab_2">
+            {%if not shift_tasks %}
+            <em>No tasks available</em>
+            {% else %}
+            <table class="table table-bordered table-hover table-striped" id="tasks-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        {% if not user.is_member %}
+                        <th>Member</th>
+                        {% endif %}
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        {% if perms.shifts.add_task %}
+                        {% if shift.is_today or user.is_admin %}
+                        <th>Action</th>
+                        {% endif %}
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in shift_tasks %}
+                    <tr id="{{ task.uuid }}">
+                        <td data-task="{{ task.uuid }}"><a href="#" target="_blank">{{ task.title }}</a></td>
+                        {% if not user.is_member %}
+                        <td data-member="{{ task.handler.id }}">{{ task.handler.user.get_full_name }}</td>
+                        {% endif %}
+                        <td data-start="{{ task.start|date:'h:i A' }}">{{ task.start|date:'h:i A' }}</td>
+                        <td {% if task.end %} data-end="{{ task.end|date:'h:i A' }}" {% endif %}>{% if task.end %} {{ task.end|date:'h:i A' }} {% endif %}</td>
+                        <td data-status="{{ task.status.id }}">{{ task.status }}</td>
+                        <td data-priority="{{ task.priority.id }}">{{ task.priority }}</td>
+                        {% if perms.shifts.add_task %}
+                        {% if shift.is_today or user.is_admin %}
+                        <td>
+                            <button type="button" class="btn btn-xs btn-primary task_edit_btn">Edit</button>
+                            <button type="button" class="btn btn-xs btn-primary task_delete_btn">Delete</button>
+                        </td>
+                        {% endif %}
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+        <!-- /.tab-pane -->
+
+        {% if perms.shifts.add_task %}
+        <div class="tab-pane" id="tab_3">
+
+            {% if shift_tasks.count < 1 %}
+            <p><i>No summary generated</i></p>
+            {% else %}
+            <table class="table table-bordered table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>Member</th>
+                        <th>Tasks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for member, task_count in member_tasks.items %}
+                    <tr>
+                        <td width="30%">{{ member.user.get_full_name }}</td>
+                        <td>{{ task_count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% endif %}
+
+        </div>
+        <!-- /.tab-pane -->
+        {% endif %}
+
+    </div>
+    <!-- /.tab-content -->
+</div>
+
 {% endblock %}
 
 {% block 'page-js' %}
-
+{{ groups_data|json_script:"sm_groups_data" }}
+{{ timeline_data|json_script:"sm_timeline_data" }}
+{{ user.is_member|json_script:"sm_is_member" }}
+<script src="{% static 'js/shifts/detail.min.js' %}"></script>
 {% endblock 'page-js' %}

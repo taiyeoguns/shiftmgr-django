@@ -7,6 +7,8 @@
 
 {% block 'content' %}
 
+
+{% if perms.shifts.add_shift %}
 <div class="row">
 	<p class="text-center">
 		<a href="#" class="btn btn-sm btn-success" data-toggle="modal" data-target="#modal"><i
@@ -14,6 +16,7 @@
 	</p>
 	<br />
 </div>
+{% endif %}
 
 {% if ongoing_shift %}
 <div class="box box-success">
@@ -32,7 +35,7 @@
 			<thead>
 				<tr>
 					<th>Shift Date</th>
-					{% if user.is_member or user.is_admin %}
+					{% if not user.is_manager %}
 					<th>Manager</th>
 					{% endif %}
 				</tr>
@@ -40,7 +43,7 @@
 			<tbody>
 				<tr href="{{ ongoing_shift.get_absolute_url }}">
 					<td>{{ ongoing_shift.date|date:"d/m/Y" }}</td>
-					{% if user.is_member or user.is_admin %}
+					{% if not user.is_manager %}
 					<td>{{ ongoing_shift.manager.user.get_full_name }}</td>
 					{% endif %}
 				</tr>
@@ -70,7 +73,7 @@
 			<thead>
 				<tr>
 					<th>Shift Date</th>
-					{% if user.is_member %}
+					{% if not user.is_manager %}
 					<th>Manager</th>
 					{% endif %}
 				</tr>
@@ -79,7 +82,7 @@
 				{% for shift in upcoming_shifts%}
 				<tr href="{{ shift.get_absolute_url }}">
 					<td>{{ shift.date|date:"d/m/Y" }}</td>
-					{% if user.is_member %}
+					{% if not user.is_manager %}
 					<td>{{ shift.manager.user.get_full_name }}</td>
 					{% endif %}
 				</tr>
@@ -109,14 +112,18 @@
 			<thead>
 				<tr>
 					<th>Shift Date</th>
+					{% if not user.is_manager %}
 					<th>Manager</th>
+					{% endif %}
 				</tr>
 			</thead>
 			<tbody>
 				{% for shift in past_shifts %}
 				<tr href="{{ shift.get_absolute_url }}">
 					<td>{{ shift.date|date:"d/m/Y" }}</td>
+					{% if not user.is_manager %}
 					<td>{{ shift.manager.user.get_full_name }}</td>
+					{% endif %}
 				</tr>
 				{% endfor %}
 			</tbody>
