@@ -1,10 +1,14 @@
-groups_data = JSON.parse($("#sm_groups_data").text());
-timeline_data = JSON.parse($("#sm_timeline_data").text());
 is_member = JSON.parse($("#sm_is_member").text());
+timeline_data = JSON.parse($("#sm_timeline_data").text());
 
 var container = document.getElementById("timeline");
 var items = new vis.DataSet(timeline_data);
-var groups = new vis.DataSet(groups_data);
+
+if (!is_member) {
+  var groups_data = JSON.parse($("#sm_groups_data").text());
+  var groups = new vis.DataSet(groups_data);
+}
+
 var options = {
   showCurrentTime: true,
   dataAttributes: "all"
@@ -60,6 +64,11 @@ document.getElementById("moveLeft").onclick = function() {
 document.getElementById("moveRight").onclick = function() {
   move(-0.2);
 };
+
+//display message if timeline not available
+if (!timeline_data || !timeline_data.length) {
+  $("#timeline").html("<em>No timeline available</em>");
+}
 
 $.fn.dataTable.moment("hh:mm A");
 tasks_table = $("#tasks-table").DataTable({
