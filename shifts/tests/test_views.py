@@ -1,4 +1,5 @@
 import datetime
+import uuid
 
 import pytest
 from django.contrib.auth import get_user_model
@@ -108,3 +109,30 @@ class TestViews:
 
         assert Shift.objects.count() == 0
         assert "issue" in str(messages[0]).lower()
+
+    def test_shifts_detail(self, user, client):
+        user.first_name = "Some"
+        user.last_name = "Manager"
+        user.save()
+
+        manager = mixer.blend(Manager, user=user)
+        shift = mixer.blend(Shift, manager=manager)
+
+        path = reverse("shifts:detail", args=[str(shift.uuid)])
+
+        client.force_login(user)
+
+        response = client.get(path)
+
+        assert "Some Manager" in str(response.content)
+
+    def test_shifts_with_non_existing_shift_id_returns_to_home(self, user, client):
+        suuid = uuid.uuid4()
+
+        path = reverse("shifts:detail", args=[str(suuid)])
+
+        client.force_login(user)
+
+        response = client.get(path)
+
+        assert reverse("shifts:index") in str(response.url)
