@@ -64,7 +64,7 @@ def detail(request, uuid):
 
         shift = GetShift.execute({"uuid": uuid}, user=request.user)
 
-        if not shift["shift"]:
+        if not shift:
             messages.error(
                 request,
                 "Could not find shift for id provided",

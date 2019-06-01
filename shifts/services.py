@@ -12,6 +12,7 @@ class GetShifts(Service):
         super(GetShifts, self).__init__(*args, **kwargs)
 
     db_transaction = False
+    user = None
 
     def process(self):
 
@@ -78,6 +79,7 @@ class GetShift(Service):
     uuid = forms.UUIDField()
 
     db_transaction = False
+    user = None
 
     def process(self):
         uuid = self.cleaned_data.get("uuid")
@@ -85,7 +87,7 @@ class GetShift(Service):
         try:
             shift = Shift.objects.get(uuid=uuid)
         except Shift.DoesNotExist:
-            shift = False
+            return False
 
         if shift:
             if self.user.is_member:
