@@ -39,7 +39,7 @@
     "ionicons": "^4.3.0",
     "jquery": "^3.3.1",
     "jquery-confirm": "^3.3.4",
-    "jquery-ui": "^1.12.1",
+    "jquery-ui-dist": "^1.12.1",
     "jquery-ui-timepicker-addon": "^1.6.3",
     "jquery-validation": "^1.19.0",
     "lint-staged": "^8.1.5",

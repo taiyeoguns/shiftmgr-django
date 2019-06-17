@@ -177,11 +177,14 @@
     <!-- /.tab-content -->
 </div>
 
+{% include "shifts/modals/add_task.html" %}
+
 {% endblock %}
 
 {% block 'page-js' %}
 {{ groups_data|json_script:"sm_groups_data" }}
 {{ timeline_data|json_script:"sm_timeline_data" }}
 {{ user.is_member|json_script:"sm_is_member" }}
+{{ shift.date|json_script:"sm_shift_date" }}
 <script src="{% static 'js/shifts/detail.min.js' %}"></script>
 {% endblock 'page-js' %}

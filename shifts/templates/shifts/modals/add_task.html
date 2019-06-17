@@ -1,0 +1,94 @@
+<div class="modal" id="modal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">Add Task</h4>
+			</div>
+			<div class="modal-body">
+            <form id="task-form" method="post" action="{% url 'shifts:tasks' %}">
+            {% csrf_token %}
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6 col-md-6">
+                    <div class="form-group">
+                        <label for="task">Task</label><br />
+                            <input type="text" class="form-control required" name="title" id="title" />
+                    </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-6 col-md-6">
+                        <div class="form-group">
+                            <label for="member">Member</label><br />
+                            <select class="form-control required" name="member" id="member" data-placeholder="Select a member" data-msg="Select a member">
+                                <option></option>
+                                {% for member in shift.members.all %}
+                                <option value='{{ member.id }}'>{{ member.user.get_full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-5 col-sm-5 col-md-5">
+                    <div class="form-group">
+                        <label for="start">Start Time</label>
+                        <input type="text" name="start" id="start" class="form-control input-sm required" placeholder="Start Time" readonly="readonly" />
+                    </div>
+                    </div>
+                    <div class="col-xs-2 col-sm-2 col-md-2">
+                    <div class="form-group">
+                        <div>&nbsp;</div>
+                        <div style="margin: 0 auto;">
+                            <p style="text-align: center; margin-top: 10px; cursor: pointer">
+                                <i class="fa fa-plus" id="time_toggle" title="Add Finish Time"></i>
+                            </p>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="col-xs-5 col-sm-5 col-md-5" id="end_block">
+                        <div class="form-group">
+                            <label for="end">Finish Time</label>
+                            <input type="text" name="end" id="end" class="form-control input-sm required" placeholder="Finish Time" readonly="readonly" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-6 col-md-6">
+                    <div class="form-group">
+                        <label for="Priority">Priority</label>
+                        <select class="form-control required" name="priority" id="priority" data-placeholder="Select the task priority" data-msg="Select the task priority">
+                            <option></option>
+                            {% for priority in priorities %}
+                            <option value="{{ priority.id }}">{{ priority.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    </div>
+                    <div class="col-xs-6 col-sm-6 col-md-6">
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <select class="form-control required" name="status" id="status" data-placeholder="Select the task status" data-msg="Select the task status">
+                                <option></option>
+                                {% for status in statuses %}
+                                <option value="{{ status.id }}">{{ status.title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" name="uuid" value="{{ shift.uuid }}">
+
+            </form>
+            </div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default pull-left" id="modalCloseBtn" data-dismiss="modal">Close</button>
+				<input type="submit" name="submit" id="modalSubmitBtn" value="Add" class="btn btn-primary" />
+			</div>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

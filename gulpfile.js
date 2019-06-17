@@ -98,6 +98,12 @@ gulp.task("shifts-css-images", function() {
     .pipe(gulp.dest("static/css/shifts"));
 });
 
+gulp.task("shifts-css-images-2", function() {
+  return gulp
+    .src(["node_modules/jquery-ui-dist/images/*"])
+    .pipe(gulp.dest("static/css/shifts/images"));
+});
+
 gulp.task("shifts-index-js", function() {
   return gulp
     .src([
@@ -124,9 +130,9 @@ gulp.task("shifts-detail-css", function() {
       "node_modules/datatables.net-bs/css/dataTables.bootstrap.min.css",
       "node_modules/chosen-js/chosen.min.css",
       "node_modules/vis/dist/vis.min.css",
-      "node_modules/jquery-ui/themes/base/datepicker.css",
+      "node_modules/jquery-ui-dist/jquery-ui.min.css",
       "node_modules/jquery-confirm/dist/jquery-confirm.min.css",
-      "node_modules/jqueryui-timepicker-addon/dist/jquery-ui-timepicker-addon.min.css"
+      "node_modules/jquery-ui-timepicker-addon/dist/jquery-ui-timepicker-addon.min.css"
     ])
     .pipe(concat("detail.min.css"))
     .pipe(csso())
@@ -142,7 +148,8 @@ gulp.task("shifts-detail-js", function() {
       "node_modules/datatable-sorting-datetime-moment/index.js",
       "node_modules/chosen-js/chosen.jquery.min.js",
       "node_modules/vis/dist/vis.min.js",
-      "node_modules/jqueryui-timepicker-addon/dist/jquery-ui-timepicker-addon.min.js",
+      "node_modules/jquery-ui-dist/jquery-ui.min.js",
+      "node_modules/jquery-ui-timepicker-addon/dist/jquery-ui-timepicker-addon.min.js",
       "node_modules/jquery-confirm/dist/jquery-confirm.min.js",
       "node_modules/lodash/lodash.min.js",
       "node_modules/jquery-validation/dist/jquery.validate.min.js",
@@ -164,6 +171,7 @@ gulp.task("default", [
   "app-js",
   "fonts",
   "shifts-css-images",
+  "shifts-css-images-2",
   "shifts-index-css",
   "shifts-index-js",
   "shifts-detail-css",
