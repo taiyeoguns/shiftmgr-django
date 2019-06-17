@@ -1,8 +1,10 @@
+from datetime import datetime
+
 from django import forms
 from django.utils import timezone
 from service_objects.services import Service
 
-from .models import Manager, Member, Shift
+from .models import Manager, Member, Priority, Shift, Status, Task
 from .notifications import ShiftCreatedEmail
 
 
@@ -111,7 +113,7 @@ class GetShift(Service):
                     "content": task.title,
                     "group": task.handler.id,
                     "start": task.start.isoformat(),
-                    "end": task.end.isoformat(),
+                    "end": task.end.isoformat() if task.end else "",
                 }
                 for task in shift_tasks
             ]
@@ -123,3 +125,65 @@ class GetShift(Service):
             "groups_data": groups_data,
             "timeline_data": timeline_data,
         }
+
+
+class AddTask(Service):
+    def __init__(self, *args, **kwargs):
+        suuid = kwargs.pop("suuid")
+        self._members = Member.objects.filter(shifts__uuid=suuid)
+        super(AddTask, self).__init__(*args, **kwargs)
+        self.fields["member"].queryset = self._members
+
+    _members = None
+    _priorities = Priority.objects.all()
+    _statuses = Status.objects.all()
+
+    uuid = forms.UUIDField()
+    title = forms.CharField()
+    start = forms.TimeField(input_formats=["%I:%M %p"], required=True)
+    end = forms.TimeField(input_formats=["%I:%M %p"], required=False)
+    member = forms.ModelChoiceField(queryset=_members, required=True)
+    priority = forms.ModelChoiceField(queryset=_priorities, required=True)
+    status = forms.ModelChoiceField(queryset=_statuses, required=True)
+
+    db_transaction = False
+
+    def process(self):
+        uuid = self.cleaned_data.get("uuid")
+        title = self.cleaned_data.get("title")
+        start = self.cleaned_data.get("start")
+        end = self.cleaned_data.get("end")
+        member = self.cleaned_data.get("member")
+        priority = self.cleaned_data.get("priority")
+        status = self.cleaned_data.get("status")
+
+        # get shift
+        try:
+            shift = Shift.objects.get(uuid=uuid)
+        except Shift.DoesNotExist:
+            return False
+
+        # create task
+        if shift:
+
+            if end:
+                task = Task.objects.create(
+                    title=title,
+                    start=timezone.make_aware(datetime.combine(shift.date, start)),
+                    end=timezone.make_aware(datetime.combine(shift.date, end)),
+                    shift=shift,
+                    handler=member,
+                    priority=priority,
+                    status=status,
+                )
+            else:
+                task = Task.objects.create(
+                    title=title,
+                    start=timezone.make_aware(datetime.combine(shift.date, start)),
+                    shift=shift,
+                    handler=member,
+                    priority=priority,
+                    status=status,
+                )
+
+            return task

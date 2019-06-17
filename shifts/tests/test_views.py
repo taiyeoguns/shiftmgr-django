@@ -8,7 +8,7 @@ from django.test import RequestFactory
 from django.urls import reverse
 from mixer.backend.django import mixer
 
-from shifts.models import Manager, Member, Shift
+from shifts.models import Manager, Member, Priority, Shift, Status, Task
 from shifts.views import index
 
 
@@ -136,3 +136,76 @@ class TestViews:
         response = client.get(path)
 
         assert reverse("shifts:index") in str(response.url)
+
+    def test_task_can_be_added(self, user, client):
+        path = reverse("shifts:tasks")
+
+        shift = mixer.blend(Shift)
+        members = mixer.cycle(3).blend(Member)
+        priority = mixer.blend(Priority)
+        status = mixer.blend(Status)
+
+        shift.members.add(*members)
+
+        title = "Task 1"
+        start = "08:24 AM"
+        end = "11:35 AM"
+
+        mbr = members[0]
+
+        client.force_login(user)
+
+        response = client.post(
+            path,
+            {
+                "title": title,
+                "member": mbr.id,
+                "start": start,
+                "end": end,
+                "priority": priority.id,
+                "status": status.id,
+                "uuid": shift.uuid,
+            },
+            follow=True,
+        )
+
+        messages = list(response.context["messages"])
+
+        assert shift.get_absolute_url() in str(response.redirect_chain)
+        assert len(messages) == 1
+        assert "Task added" in str(messages[0])
+
+    def test_task_create_does_not_add_if_form_invalid(self, user, client):
+        path = reverse("shifts:tasks")
+
+        shift = mixer.blend(Shift)
+        members = mixer.cycle(3).blend(Member)
+        priority = mixer.blend(Priority)
+        status = mixer.blend(Status)
+
+        shift.members.add(*members)
+
+        title = "Task 1"
+        start = "08:24"
+
+        mbr = members[0]
+
+        client.force_login(user)
+
+        response = client.post(
+            path,
+            {
+                "title": title,
+                "member": mbr.id,
+                "start": start,
+                "priority": priority.id,
+                "status": status.id,
+                "uuid": shift.uuid,
+            },
+            follow=True,
+        )
+
+        messages = list(response.context["messages"])
+
+        assert Task.objects.count() == 0
+        assert "issue" in str(messages[0]).lower()

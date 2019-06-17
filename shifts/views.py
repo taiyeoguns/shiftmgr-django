@@ -4,11 +4,13 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.shortcuts import redirect, render
+from django.utils.decorators import method_decorator
+from django.views.generic import View
 from service_objects.errors import InvalidInputsError
 
-from .forms import AddShiftForm
-from .models import Manager, Member
-from .services import AddShift, GetShift, GetShifts
+from .forms import AddShiftForm, AddTaskForm
+from .models import Manager, Member, Priority, Shift, Status
+from .services import AddShift, AddTask, GetShift, GetShifts
 
 logger = logging.getLogger(__name__)
 
@@ -91,5 +93,29 @@ def detail(request, uuid):
             "member_tasks": shift["member_tasks"],
             "groups_data": shift["groups_data"],
             "timeline_data": shift["timeline_data"],
+            "priorities": Priority.objects.all(),
+            "statuses": Status.objects.all(),
         },
     )
+
+
+@method_decorator(login_required, name="dispatch")
+class TaskView(View):
+    def post(self, request):
+        suuid = request.POST.get("uuid")
+        form = AddTaskForm(request.POST, suuid=suuid)
+        shift = Shift.objects.get(uuid=suuid)
+
+        if form.is_valid():
+            task = AddTask.execute(request.POST, suuid=request.POST.get("uuid"))
+
+            messages.success(request, "Task added successfully")
+            logger.info(f"Task added successfully. id: {task.id}")
+        else:
+            messages.error(
+                request,
+                f"Issue with items entered. Check and try again.",
+                extra_tags="alert-important",
+            )
+
+        return redirect(shift)
