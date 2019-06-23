@@ -29,8 +29,8 @@ def index(request):
             "past_shifts": shifts.get("past_shifts"),
             "upcoming_shifts": shifts.get("upcoming_shifts"),
             "ongoing_shift": shifts.get("ongoing_shift"),
-            "managers": Manager.objects.all(),
-            "members": Member.objects.all(),
+            "managers": Manager.objects.select_related("user").all(),
+            "members": Member.objects.select_related("user").all(),
         },
     )
 

@@ -45,16 +45,22 @@ class GetShifts(Service):
         elif self.user.is_member:
             return self.user.member.shifts.all()
         else:
-            return Shift.objects.all()
+            return (
+                Shift.objects.select_related("manager")
+                .prefetch_related("members")
+                .all()
+            )
 
 
 class AddShift(Service):
     shift_date = forms.DateField(input_formats=["%d/%m/%Y"], required=True)
     manager = forms.ModelChoiceField(
-        queryset=Manager.objects.all(), empty_label="", required=True
+        queryset=Manager.objects.select_related("user").all(),
+        empty_label="",
+        required=True,
     )
     members = forms.ModelMultipleChoiceField(
-        queryset=Member.objects.all(), required=True
+        queryset=Member.objects.select_related("user").all(), required=True
     )
 
     def process(self):
@@ -87,7 +93,11 @@ class GetShift(Service):
         uuid = self.cleaned_data.get("uuid")
 
         try:
-            shift = Shift.objects.get(uuid=uuid)
+            shift = (
+                Shift.objects.select_related("manager")
+                .prefetch_related("members")
+                .get(uuid=uuid)
+            )
         except Shift.DoesNotExist:
             return False
 
