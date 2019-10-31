@@ -43,7 +43,7 @@
     "jquery-ui-timepicker-addon": "^1.6.3",
     "jquery-validation": "^1.19.0",
     "lint-staged": "^8.1.5",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "moment": "^2.24.0",
     "prettier": "^1.16.4",
     "vis": "^4.21.0"
