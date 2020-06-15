@@ -162,8 +162,8 @@ class TestServices:
     ):
         with mixer.ctx(commit=False):
             members = mixer.cycle(2).blend(Member, id=(id for id in (1, 2)))
-            priorities = mixer.cycle(2).blend(Priority, id=(id for id in (1, 2)))
-            statuses = mixer.cycle(2).blend(Status, id=(id for id in (1, 2)))
+            priorities = mixer.cycle(2).blend(Priority, id=iter((1, 2)))
+            statuses = mixer.cycle(2).blend(Status, id=iter((1, 2)))
 
         mock_members.return_value = members
         mock_statuses.return_value = statuses
@@ -211,15 +211,13 @@ class TestServices:
         member = mixer.blend(Member, user__is_member=True)
         shift.members.add(member)
         priorities = mixer.cycle(2).blend(
-            Priority,
-            id=(id for id in (1, 2)),
-            title=(title for title in ("High", "Medium")),
+            Priority, id=iter((1, 2)), title=iter(("High", "Medium"))
         )
+
         statuses = mixer.cycle(2).blend(
-            Status,
-            id=(id for id in (1, 2)),
-            title=(title for title in ("Ongoing", "Completed")),
+            Status, id=iter((1, 2)), title=iter(("Ongoing", "Completed"))
         )
+
 
         title = "Task 1"
         start = "09:13 AM"
@@ -253,15 +251,13 @@ class TestServices:
         member = mixer.blend(Member, user__is_member=True)
         shift.members.add(member)
         priorities = mixer.cycle(2).blend(
-            Priority,
-            id=(id for id in (1, 2)),
-            title=(title for title in ("High", "Medium")),
+            Priority, id=iter((1, 2)), title=iter(("High", "Medium"))
         )
+
         statuses = mixer.cycle(2).blend(
-            Status,
-            id=(id for id in (1, 2)),
-            title=(title for title in ("Ongoing", "Completed")),
+            Status, id=iter((1, 2)), title=iter(("Ongoing", "Completed"))
         )
+
 
         title = "Task 1"
         start = "09:13 AM"
@@ -294,15 +290,13 @@ class TestServices:
         member = mixer.blend(Member, user__is_member=True)
         shift.members.add(member)
         priorities = mixer.cycle(2).blend(
-            Priority,
-            id=(id for id in (1, 2)),
-            title=(title for title in ("High", "Medium")),
+            Priority, id=iter((1, 2)), title=iter(("High", "Medium"))
         )
+
         statuses = mixer.cycle(2).blend(
-            Status,
-            id=(id for id in (1, 2)),
-            title=(title for title in ("Ongoing", "Completed")),
+            Status, id=iter((1, 2)), title=iter(("Ongoing", "Completed"))
         )
+
 
         title = "Task 1"
         start = "09:13 AM"
