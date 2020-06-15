@@ -118,7 +118,7 @@ class Command(BaseCommand):
         members = Member.objects.all()
         shifts = Shift.objects.all()
 
-        for i in range(options["num"]):
+        for _ in range(options["num"]):
             member = random.choice(members)
             shift = random.choice(shifts)
 
@@ -126,7 +126,7 @@ class Command(BaseCommand):
 
         # seed tasks
         self.stdout.write("Seeding Tasks")
-        for i in range(options["num"]):
+        for _ in range(options["num"]):
             member = random.choice(members)
             shift = random.choice(shifts.filter(date__lte=datetime.today()))
 
@@ -205,14 +205,10 @@ class Command(BaseCommand):
 
     def _set_up_static_data(self):
         self.stdout.write("Seeding Priorities")
-        mixer.cycle(3).blend(
-            Priority, title=(title for title in ("High", "Medium", "Low"))
-        )
+        mixer.cycle(3).blend(Priority, title=iter(("High", "Medium", "Low")))
 
         self.stdout.write("Seeding Statuses")
-        mixer.cycle(2).blend(
-            Status, title=(title for title in ("Ongoing", "Completed"))
-        )
+        mixer.cycle(2).blend(Status, title=iter(("Ongoing", "Completed")))
 
         self.stdout.write("Seeding Groups and Permissions")
 

@@ -5,9 +5,8 @@ import pytest
 
 @pytest.fixture
 def user():
-    user = get_user_model().objects.create_user(
+    return get_user_model().objects.create_user(
         username='testuser', email='testuser@email.com', password='password')
-    return user
 
 
 @pytest.mark.django_db
