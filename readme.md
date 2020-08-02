@@ -106,3 +106,18 @@ In command prompt, run:
 ```sh
 pytest -v
 ```
+
+## Run with Docker
+
+With Docker and Docker Compose set up, run the following commands:
+
+```sh
+docker-compose up -d
+docker-compose exec web_service python manage.py migrate --no-input
+docker-compose exec web_service python manage.py seed
+docker-compose exec web_service python manage.py collectstatic --no-input
+```
+
+Wait till setup is complete and all containers are started.
+
+Thereafter, application should be available at `http://localhost:8000`
