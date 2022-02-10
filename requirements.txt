@@ -1,4 +1,4 @@
-Django==2.2.26
+Django==2.2.27
 django-herald==0.2
 django-service-objects==0.5.0
 flake8==3.7.7
